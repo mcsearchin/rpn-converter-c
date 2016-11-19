@@ -1,0 +1,11 @@
+#include <stdlib.h>
+
+#include "rpn-converter.h"
+
+#test can_convert_infix_addition_to_rpn
+	char *infix = "a+b";
+	char *rpn = malloc((strlen(infix) + 1) * sizeof(char));
+
+	to_rpn(infix, rpn);
+
+	ck_assert_str_eq(rpn, "ab+");
