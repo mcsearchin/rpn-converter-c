@@ -8,6 +8,7 @@ For this programming exercise, you will be creating a library which will allow t
 * The order of operation, when not overridden by parentheses, is described in the table below by descending order. For example, because division has higher precedence than multiplication, a*b/c is equivalent to a*(b/c).
 
 ## Precedence Name Operator
+
 --- | --- | ---
 1 | Exponent | ^
 2 | Division | /
