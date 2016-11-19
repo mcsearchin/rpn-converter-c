@@ -2,10 +2,30 @@
 
 #include "rpn-converter.h"
 
-#test can_convert_infix_addition_to_rpn
-	char *infix = "a+b";
-	char *rpn = malloc((strlen(infix) + 1) * sizeof(char));
+char *infix;
+char *rpn;
 
-	to_rpn(infix, rpn);
+void tear_down() {
+    free(rpn);
+}
 
-	ck_assert_str_eq(rpn, "ab+");
+#tcase to_rpn
+
+#test can_convert_addition
+    infix = "a+b";
+    rpn = malloc((strlen(infix) + 1) * sizeof(char));
+
+    to_rpn(infix, rpn);
+
+    ck_assert_str_eq(rpn, "ab+");
+
+#test can_convert_subtraction
+    infix = "a-b";
+    rpn = malloc((strlen(infix) + 1) * sizeof(char));
+
+    to_rpn(infix, rpn);
+
+    ck_assert_str_eq(rpn, "ab-");
+
+#main-pre
+    tcase_add_checked_fixture(tc1_1, NULL, tear_down);

@@ -10,27 +10,55 @@
 
 #include "rpn-converter.h"
 
-START_TEST(can_convert_infix_addition_to_rpn)
+char *infix;
+char *rpn;
+
+void tear_down() {
+    infix = NULL;
+    free(rpn);
+}
+
+
+START_TEST(can_convert_addition)
 {
-#line 6
-	char *infix = "a+b";
-	char *rpn = malloc((strlen(infix) + 1) * sizeof(char));
+#line 16
+    infix = "a+b";
+    rpn = malloc((strlen(infix) + 1) * sizeof(char));
 
-	to_rpn(infix, rpn);
+    to_rpn(infix, rpn);
 
-	ck_assert_str_eq(rpn, "ab+");
+    ck_assert_str_eq(rpn, "ab+");
+
+}
+END_TEST
+
+START_TEST(can_convert_subtraction)
+{
+#line 24
+    infix = "a-b";
+    rpn = malloc((strlen(infix) + 1) * sizeof(char));
+
+    to_rpn(infix, rpn);
+
+    ck_assert_str_eq(rpn, "ab-");
+
 }
 END_TEST
 
 int main(void)
 {
     Suite *s1 = suite_create("Core");
-    TCase *tc1_1 = tcase_create("Core");
+    TCase *tc1_1 = tcase_create("to_rpn");
     SRunner *sr = srunner_create(s1);
     int nf;
 
+    /* User-specified pre-run code */
+#line 32
+    tcase_add_checked_fixture(tc1_1, NULL, tear_down);
+
     suite_add_tcase(s1, tc1_1);
-    tcase_add_test(tc1_1, can_convert_infix_addition_to_rpn);
+    tcase_add_test(tc1_1, can_convert_addition);
+    tcase_add_test(tc1_1, can_convert_subtraction);
 
     srunner_run_all(sr, CK_ENV);
     nf = srunner_ntests_failed(sr);
