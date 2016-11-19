@@ -9,6 +9,7 @@ For this programming exercise, you will be creating a library which will allow t
 
 ## Precedence Name Operator
 
+Rank | Operator | Symbol
 --- | --- | ---
 1 | Exponent | ^
 2 | Division | /
