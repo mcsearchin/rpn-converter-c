@@ -5,7 +5,7 @@
 
 #include "rpn-converter.h"
 
-const char valid_operators[] = { '+', '-', '*' };
+const char valid_operators[] = { '+', '-', '*', '/' };
 
 static bool is_valid_operator(const char operator) {
     int index, valid_operators_length = sizeof(valid_operators);
@@ -15,7 +15,6 @@ static bool is_valid_operator(const char operator) {
         }
     }
 
-    fprintf(stderr, "Invalid operator: '%c'\n", operator);
     return false;
 }
 
