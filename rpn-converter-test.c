@@ -14,14 +14,13 @@ char *infix;
 char *rpn;
 
 void tear_down() {
-    infix = NULL;
     free(rpn);
 }
 
 
 START_TEST(can_convert_addition)
 {
-#line 16
+#line 15
     infix = "a+b";
     rpn = malloc((strlen(infix) + 1) * sizeof(char));
 
@@ -34,13 +33,26 @@ END_TEST
 
 START_TEST(can_convert_subtraction)
 {
-#line 24
+#line 23
     infix = "a-b";
     rpn = malloc((strlen(infix) + 1) * sizeof(char));
 
     to_rpn(infix, rpn);
 
     ck_assert_str_eq(rpn, "ab-");
+
+}
+END_TEST
+
+START_TEST(can_convert_multiplication)
+{
+#line 31
+    infix = "a*b";
+    rpn = malloc((strlen(infix) + 1) * sizeof(char));
+
+    to_rpn(infix, rpn);
+
+    ck_assert_str_eq(rpn, "ab*");
 
 }
 END_TEST
@@ -53,12 +65,13 @@ int main(void)
     int nf;
 
     /* User-specified pre-run code */
-#line 32
+#line 39
     tcase_add_checked_fixture(tc1_1, NULL, tear_down);
 
     suite_add_tcase(s1, tc1_1);
     tcase_add_test(tc1_1, can_convert_addition);
     tcase_add_test(tc1_1, can_convert_subtraction);
+    tcase_add_test(tc1_1, can_convert_multiplication);
 
     srunner_run_all(sr, CK_ENV);
     nf = srunner_ntests_failed(sr);

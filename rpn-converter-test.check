@@ -27,5 +27,13 @@ void tear_down() {
 
     ck_assert_str_eq(rpn, "ab-");
 
+#test can_convert_multiplication
+    infix = "a*b";
+    rpn = malloc((strlen(infix) + 1) * sizeof(char));
+
+    to_rpn(infix, rpn);
+
+    ck_assert_str_eq(rpn, "ab*");
+
 #main-pre
     tcase_add_checked_fixture(tc1_1, NULL, tear_down);
