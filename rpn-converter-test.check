@@ -15,7 +15,7 @@ void tear_down() {
     infix = "a+b";
     rpn = malloc((strlen(infix) + 1) * sizeof(char));
 
-    to_rpn(infix, rpn);
+    ck_assert_int_eq(to_rpn(infix, rpn), SUCCESS);
 
     ck_assert_str_eq(rpn, "ab+");
 
@@ -23,7 +23,7 @@ void tear_down() {
     infix = "a-b";
     rpn = malloc((strlen(infix) + 1) * sizeof(char));
 
-    to_rpn(infix, rpn);
+    ck_assert_int_eq(to_rpn(infix, rpn), SUCCESS);
 
     ck_assert_str_eq(rpn, "ab-");
 
@@ -31,9 +31,17 @@ void tear_down() {
     infix = "a*b";
     rpn = malloc((strlen(infix) + 1) * sizeof(char));
 
-    to_rpn(infix, rpn);
+    ck_assert_int_eq(to_rpn(infix, rpn), SUCCESS);
 
     ck_assert_str_eq(rpn, "ab*");
+
+#test when_an_unsupported_operator_is_passed_it_returns_invalid_character_status
+    infix = "a&b";
+    rpn = malloc((strlen(infix) + 1) * sizeof(char));
+
+    ck_assert_int_eq(to_rpn(infix, rpn), INVALID_CHARACTER);
+
+    ck_assert_str_eq(rpn, "");
 
 #main-pre
     tcase_add_checked_fixture(tc1_1, NULL, tear_down);

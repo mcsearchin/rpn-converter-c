@@ -24,7 +24,7 @@ START_TEST(can_convert_addition)
     infix = "a+b";
     rpn = malloc((strlen(infix) + 1) * sizeof(char));
 
-    to_rpn(infix, rpn);
+    ck_assert_int_eq(to_rpn(infix, rpn), SUCCESS);
 
     ck_assert_str_eq(rpn, "ab+");
 
@@ -37,7 +37,7 @@ START_TEST(can_convert_subtraction)
     infix = "a-b";
     rpn = malloc((strlen(infix) + 1) * sizeof(char));
 
-    to_rpn(infix, rpn);
+    ck_assert_int_eq(to_rpn(infix, rpn), SUCCESS);
 
     ck_assert_str_eq(rpn, "ab-");
 
@@ -50,9 +50,22 @@ START_TEST(can_convert_multiplication)
     infix = "a*b";
     rpn = malloc((strlen(infix) + 1) * sizeof(char));
 
-    to_rpn(infix, rpn);
+    ck_assert_int_eq(to_rpn(infix, rpn), SUCCESS);
 
     ck_assert_str_eq(rpn, "ab*");
+
+}
+END_TEST
+
+START_TEST(when_an_unsupported_operator_is_passed_it_returns_invalid_character_status)
+{
+#line 39
+    infix = "a&b";
+    rpn = malloc((strlen(infix) + 1) * sizeof(char));
+
+    ck_assert_int_eq(to_rpn(infix, rpn), INVALID_CHARACTER);
+
+    ck_assert_str_eq(rpn, "");
 
 }
 END_TEST
@@ -65,13 +78,14 @@ int main(void)
     int nf;
 
     /* User-specified pre-run code */
-#line 39
+#line 47
     tcase_add_checked_fixture(tc1_1, NULL, tear_down);
 
     suite_add_tcase(s1, tc1_1);
     tcase_add_test(tc1_1, can_convert_addition);
     tcase_add_test(tc1_1, can_convert_subtraction);
     tcase_add_test(tc1_1, can_convert_multiplication);
+    tcase_add_test(tc1_1, when_an_unsupported_operator_is_passed_it_returns_invalid_character_status);
 
     srunner_run_all(sr, CK_ENV);
     nf = srunner_ntests_failed(sr);
