@@ -43,6 +43,14 @@ void tear_down() {
 
     ck_assert_str_eq(rpn, "ab/");
 
+#test can_convert_exponent
+    infix = "a^b";
+    rpn = malloc((strlen(infix) + 1) * sizeof(char));
+
+    ck_assert_int_eq(to_rpn(infix, rpn), SUCCESS);
+
+    ck_assert_str_eq(rpn, "ab^");
+
 #test when_an_unsupported_operator_is_passed_it_returns_invalid_character_status
     infix = "a&b";
     rpn = malloc((strlen(infix) + 1) * sizeof(char));

@@ -5,21 +5,22 @@
 
 #include "rpn-converter.h"
 
-const char valid_operators[] = { '+', '-', '*', '/' };
+const char supported_operators[] = { '+', '-', '*', '/', '^' };
 
-static bool is_valid_operator(const char operator) {
-    int index, valid_operators_length = sizeof(valid_operators);
-    for (index = 0; index < valid_operators_length; index++) {
-        if (valid_operators[index] == operator) {
+static bool is_supported_operator(const char operator) {
+    int index, supported_operators_length = sizeof(supported_operators);
+    for (index = 0; index < supported_operators_length; index++) {
+        if (supported_operators[index] == operator) {
             return true;
         }
     }
 
+    fprintf(stderr, "Unsupported operator: '%c'\n", operator);
     return false;
 }
 
 rpn_conversion_status to_rpn(const char *infix, char *rpn) {
-    if (!is_valid_operator(infix[1])) {
+    if (!is_supported_operator(infix[1])) {
         return INVALID_CHARACTER;
     }
     strcpy(rpn, "ab");
