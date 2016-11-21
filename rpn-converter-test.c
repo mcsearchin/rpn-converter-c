@@ -6,93 +6,77 @@
 #include <check.h>
 
 #line 1 "rpn-converter-test.check"
-#include <stdlib.h>
-
 #include "rpn-converter.h"
 
-char *infix;
-char *rpn;
-
-void tear_down() {
-    free(rpn);
-}
+char rpn_result[100];
 
 
 START_TEST(can_convert_addition)
 {
-#line 15
-    infix = "a+b";
-    rpn = malloc((strlen(infix) + 1) * sizeof(char));
+#line 8
+    ck_assert_int_eq(to_rpn("a+b", rpn_result), SUCCESS);
 
-    ck_assert_int_eq(to_rpn(infix, rpn), SUCCESS);
-
-    ck_assert_str_eq(rpn, "ab+");
+    ck_assert_str_eq(rpn_result, "ab+");
 
 }
 END_TEST
 
 START_TEST(can_convert_subtraction)
 {
-#line 23
-    infix = "a-b";
-    rpn = malloc((strlen(infix) + 1) * sizeof(char));
+#line 13
+    ck_assert_int_eq(to_rpn("a-b", rpn_result), SUCCESS);
 
-    ck_assert_int_eq(to_rpn(infix, rpn), SUCCESS);
-
-    ck_assert_str_eq(rpn, "ab-");
+    ck_assert_str_eq(rpn_result, "ab-");
 
 }
 END_TEST
 
 START_TEST(can_convert_multiplication)
 {
-#line 31
-    infix = "a*b";
-    rpn = malloc((strlen(infix) + 1) * sizeof(char));
+#line 18
+    ck_assert_int_eq(to_rpn("a*b", rpn_result), SUCCESS);
 
-    ck_assert_int_eq(to_rpn(infix, rpn), SUCCESS);
-
-    ck_assert_str_eq(rpn, "ab*");
+    ck_assert_str_eq(rpn_result, "ab*");
 
 }
 END_TEST
 
 START_TEST(can_convert_division)
 {
-#line 39
-    infix = "a/b";
-    rpn = malloc((strlen(infix) + 1) * sizeof(char));
+#line 23
+    ck_assert_int_eq(to_rpn("a/b", rpn_result), SUCCESS);
 
-    ck_assert_int_eq(to_rpn(infix, rpn), SUCCESS);
-
-    ck_assert_str_eq(rpn, "ab/");
+    ck_assert_str_eq(rpn_result, "ab/");
 
 }
 END_TEST
 
 START_TEST(can_convert_exponent)
 {
-#line 47
-    infix = "a^b";
-    rpn = malloc((strlen(infix) + 1) * sizeof(char));
+#line 28
+    ck_assert_int_eq(to_rpn("a^b", rpn_result), SUCCESS);
 
-    ck_assert_int_eq(to_rpn(infix, rpn), SUCCESS);
-
-    ck_assert_str_eq(rpn, "ab^");
+    ck_assert_str_eq(rpn_result, "ab^");
 
 }
 END_TEST
 
 START_TEST(when_an_unsupported_operator_is_passed_it_returns_invalid_character_status)
 {
-#line 55
-    infix = "a&b";
-    rpn = malloc((strlen(infix) + 1) * sizeof(char));
+#line 33
+    ck_assert_int_eq(to_rpn("a&b", rpn_result), INVALID_CHARACTER);
 
-    ck_assert_int_eq(to_rpn(infix, rpn), INVALID_CHARACTER);
+    ck_assert_str_eq(rpn_result, "");
 
-    ck_assert_str_eq(rpn, "");
+}
+END_TEST
 
+START_TEST(can_convert_with_any_operands_that_are_lowercase_letters)
+{
+#line 38
+    ck_assert_int_eq(to_rpn("a+z", rpn_result), SUCCESS);
+
+    ck_assert_str_eq(rpn_result, "az+");
 }
 END_TEST
 
@@ -103,10 +87,6 @@ int main(void)
     SRunner *sr = srunner_create(s1);
     int nf;
 
-    /* User-specified pre-run code */
-#line 63
-    tcase_add_checked_fixture(tc1_1, NULL, tear_down);
-
     suite_add_tcase(s1, tc1_1);
     tcase_add_test(tc1_1, can_convert_addition);
     tcase_add_test(tc1_1, can_convert_subtraction);
@@ -114,6 +94,7 @@ int main(void)
     tcase_add_test(tc1_1, can_convert_division);
     tcase_add_test(tc1_1, can_convert_exponent);
     tcase_add_test(tc1_1, when_an_unsupported_operator_is_passed_it_returns_invalid_character_status);
+    tcase_add_test(tc1_1, can_convert_with_any_operands_that_are_lowercase_letters);
 
     srunner_run_all(sr, CK_ENV);
     nf = srunner_ntests_failed(sr);

@@ -23,11 +23,10 @@ rpn_conversion_status to_rpn(const char *infix, char *rpn) {
     if (!is_supported_operator(infix[1])) {
         return INVALID_CHARACTER;
     }
-    strcpy(rpn, "ab");
-    char operator[2];
-    memcpy(operator, &infix[1], 1);
-    operator[1] = '\0';
-    strcat(rpn, operator);
+    rpn[0] = infix[0];
+    rpn[1] = infix[2];
+    rpn[2] = infix[1];
+    rpn[3] = '\0';
 
     return SUCCESS;
 }

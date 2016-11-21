@@ -1,63 +1,40 @@
-#include <stdlib.h>
-
 #include "rpn-converter.h"
 
-char *infix;
-char *rpn;
-
-void tear_down() {
-    free(rpn);
-}
+char rpn_result[100];
 
 #tcase to_rpn
 
 #test can_convert_addition
-    infix = "a+b";
-    rpn = malloc((strlen(infix) + 1) * sizeof(char));
+    ck_assert_int_eq(to_rpn("a+b", rpn_result), SUCCESS);
 
-    ck_assert_int_eq(to_rpn(infix, rpn), SUCCESS);
-
-    ck_assert_str_eq(rpn, "ab+");
+    ck_assert_str_eq(rpn_result, "ab+");
 
 #test can_convert_subtraction
-    infix = "a-b";
-    rpn = malloc((strlen(infix) + 1) * sizeof(char));
+    ck_assert_int_eq(to_rpn("a-b", rpn_result), SUCCESS);
 
-    ck_assert_int_eq(to_rpn(infix, rpn), SUCCESS);
-
-    ck_assert_str_eq(rpn, "ab-");
+    ck_assert_str_eq(rpn_result, "ab-");
 
 #test can_convert_multiplication
-    infix = "a*b";
-    rpn = malloc((strlen(infix) + 1) * sizeof(char));
+    ck_assert_int_eq(to_rpn("a*b", rpn_result), SUCCESS);
 
-    ck_assert_int_eq(to_rpn(infix, rpn), SUCCESS);
-
-    ck_assert_str_eq(rpn, "ab*");
+    ck_assert_str_eq(rpn_result, "ab*");
 
 #test can_convert_division
-    infix = "a/b";
-    rpn = malloc((strlen(infix) + 1) * sizeof(char));
+    ck_assert_int_eq(to_rpn("a/b", rpn_result), SUCCESS);
 
-    ck_assert_int_eq(to_rpn(infix, rpn), SUCCESS);
-
-    ck_assert_str_eq(rpn, "ab/");
+    ck_assert_str_eq(rpn_result, "ab/");
 
 #test can_convert_exponent
-    infix = "a^b";
-    rpn = malloc((strlen(infix) + 1) * sizeof(char));
+    ck_assert_int_eq(to_rpn("a^b", rpn_result), SUCCESS);
 
-    ck_assert_int_eq(to_rpn(infix, rpn), SUCCESS);
-
-    ck_assert_str_eq(rpn, "ab^");
+    ck_assert_str_eq(rpn_result, "ab^");
 
 #test when_an_unsupported_operator_is_passed_it_returns_invalid_character_status
-    infix = "a&b";
-    rpn = malloc((strlen(infix) + 1) * sizeof(char));
+    ck_assert_int_eq(to_rpn("a&b", rpn_result), INVALID_CHARACTER);
 
-    ck_assert_int_eq(to_rpn(infix, rpn), INVALID_CHARACTER);
+    ck_assert_str_eq(rpn_result, "");
 
-    ck_assert_str_eq(rpn, "");
+#test can_convert_with_any_operands_that_are_lowercase_letters
+    ck_assert_int_eq(to_rpn("a+z", rpn_result), SUCCESS);
 
-#main-pre
-    tcase_add_checked_fixture(tc1_1, NULL, tear_down);
+    ck_assert_str_eq(rpn_result, "az+");
