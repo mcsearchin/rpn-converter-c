@@ -5,6 +5,9 @@
 
 #include "rpn-converter.h"
 
+#define min_char_int_value 97
+#define max_char_int_value 122
+
 const char supported_operators[] = { '+', '-', '*', '/', '^' };
 
 static bool is_supported_operator(const char operator) {
@@ -19,10 +22,18 @@ static bool is_supported_operator(const char operator) {
     return false;
 }
 
+static bool is_valid_operand(const char operand) {
+    return operand >= min_char_int_value && operand <= max_char_int_value;
+}
+
 rpn_conversion_status to_rpn(const char *infix, char *rpn) {
-    if (!is_supported_operator(infix[1])) {
+    if (!is_supported_operator(infix[1]) || 
+        !is_valid_operand(infix[0]) || 
+        !is_valid_operand(infix[2])) {
+
         return INVALID_CHARACTER;
     }
+
     rpn[0] = infix[0];
     rpn[1] = infix[2];
     rpn[2] = infix[1];
