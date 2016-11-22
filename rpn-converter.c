@@ -7,6 +7,7 @@
 
 #define min_char_int_value 97
 #define max_char_int_value 122
+#define null_char '\0'
 
 const char supported_operators[] = { '+', '-', '*', '/', '^' };
 
@@ -28,17 +29,29 @@ static bool is_valid_operand(const char operand) {
 rpn_conversion_status to_rpn(const char *infix, char *rpn) {
     int infix_index, infix_length = strlen(infix);
     char infix_char;
-    int operand_index = 0, operator_index = infix_length - 1;
+    int ascending_index = 0, descending_index = infix_length - 1;
+    char current_operator;
+    
     for (infix_index = 0; infix_index < infix_length; infix_index++) {
         infix_char = infix[infix_index];
+
         if (is_valid_operand(infix_char)) {
-            rpn[operand_index] = infix_char;
-            operand_index++;
+            rpn[ascending_index] = infix_char;
+            ascending_index++;
+            if (null_char != current_operator) {
+                rpn[ascending_index] = current_operator;
+                ascending_index++;
+                current_operator = null_char;
+            }
         } else if (is_supported_operator(infix_char)) {
-            rpn[operator_index] = infix_char;
-            operator_index--;
+            if ('-' == infix_char) {
+                current_operator = infix_char;
+            } else {
+                rpn[descending_index] = infix_char;
+                descending_index--;
+            }
         } else {
-            rpn[0] = '\0';
+            rpn[0] = null_char;
             return INVALID_CHARACTER;
         }
     }
