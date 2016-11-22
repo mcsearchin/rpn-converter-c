@@ -44,7 +44,12 @@ char rpn_result[100];
 
     ck_assert_str_eq(rpn_result, "");
 
-#test when_a_non_lowercase_letter_second_operand_is_passed_it_returns_invalid_character_status
+#test when_a_non_lowercase_letter_last_operand_is_passed_it_returns_invalid_character_status
     ck_assert_int_eq(to_rpn("a+{", rpn_result), INVALID_CHARACTER);
 
     ck_assert_str_eq(rpn_result, "");
+
+#test can_convert_multiple_addition
+    ck_assert_int_eq(to_rpn("a+b+c+d", rpn_result), SUCCESS);
+
+    ck_assert_str_eq(rpn_result, "abcd+++");

@@ -18,7 +18,6 @@ static bool is_supported_operator(const char operator) {
         }
     }
 
-    fprintf(stderr, "Unsupported operator: '%c'\n", operator);
     return false;
 }
 
@@ -27,17 +26,22 @@ static bool is_valid_operand(const char operand) {
 }
 
 rpn_conversion_status to_rpn(const char *infix, char *rpn) {
-    if (!is_supported_operator(infix[1]) || 
-        !is_valid_operand(infix[0]) || 
-        !is_valid_operand(infix[2])) {
-
-        return INVALID_CHARACTER;
+    int infix_index, infix_length = strlen(infix);
+    char infix_char;
+    int operand_index = 0, operator_index = infix_length - 1;
+    for (infix_index = 0; infix_index < infix_length; infix_index++) {
+        infix_char = infix[infix_index];
+        if (is_valid_operand(infix_char)) {
+            rpn[operand_index] = infix_char;
+            operand_index++;
+        } else if (is_supported_operator(infix_char)) {
+            rpn[operator_index] = infix_char;
+            operator_index--;
+        } else {
+            rpn[0] = '\0';
+            return INVALID_CHARACTER;
+        }
     }
-
-    rpn[0] = infix[0];
-    rpn[1] = infix[2];
-    rpn[2] = infix[1];
-    rpn[3] = '\0';
 
     return SUCCESS;
 }
