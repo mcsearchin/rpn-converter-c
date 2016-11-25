@@ -64,7 +64,7 @@ char rpn_result[100];
 
     ck_assert_str_eq(rpn_result, "ab*c-");
 
-//#test can_convert_addition_then_subtraction_then_multiplication
-//    ck_assert_int_eq(to_rpn("a+b-c*d", rpn_result), SUCCESS);
-//
-//    ck_assert_str_eq(rpn_result, "abcd*-+");
+#test can_convert_addition_then_subtraction_then_multiplication
+    ck_assert_int_eq(to_rpn("a+b-c*d", rpn_result), SUCCESS);
+
+    ck_assert_str_eq(rpn_result, "abcd*-+");

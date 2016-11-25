@@ -26,14 +26,10 @@ static bool is_supported_operator(const char operator) {
     return get_operator_precedence(operator) >= 0;
 }
 
-static bool is_valid_operand(const char operand) {
-    return operand >= min_char_int_value && operand <= max_char_int_value;
-}
-
-rpn_conversion_status to_rpn(const char *infix, char *rpn) {
+static int get_weakest_operator_precedence(const char *infix) {
     int infix_index, infix_length = strlen(infix);
-
     int operator_precedence, weakest_operator_precedence = -1;
+
     for (infix_index = 0; infix_index < infix_length; infix_index++) {
         operator_precedence = get_operator_precedence(infix[infix_index]);
         if (operator_precedence > weakest_operator_precedence) {
@@ -41,9 +37,19 @@ rpn_conversion_status to_rpn(const char *infix, char *rpn) {
         }
     }
 
+    return weakest_operator_precedence;
+}
+
+static bool is_valid_operand(const char operand) {
+    return operand >= min_char_int_value && operand <= max_char_int_value;
+}
+
+rpn_conversion_status to_rpn(const char *infix, char *rpn) {
+    int infix_index, infix_length = strlen(infix);
     char infix_char;
     int ascending_index = 0, descending_index = infix_length - 1;
-    char current_operator;
+    char current_operator = null_char;
+    int weakest_operator_precedence = get_weakest_operator_precedence(infix);
     
     for (infix_index = 0; infix_index < infix_length; infix_index++) {
         infix_char = infix[infix_index];
@@ -62,11 +68,14 @@ rpn_conversion_status to_rpn(const char *infix, char *rpn) {
             } else {
                 rpn[descending_index] = infix_char;
                 descending_index--;
+                weakest_operator_precedence = get_weakest_operator_precedence(&infix[infix_index + 1]);
             }
         } else {
             rpn[0] = null_char;
             return INVALID_CHARACTER;
         }
+
+        printf("infix : %s, rpn : %s\n", infix, rpn);
     }
 
     return SUCCESS;
