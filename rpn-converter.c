@@ -58,11 +58,14 @@ rpn_conversion_status to_rpn(const char *infix, char *rpn) {
     operation.operator = infix[1];
     operation.left_operand = infix[0];
     operation.right_operand = infix[2];
+    if (!is_supported_operator(operation.operator)) {
+        return INVALID_CHARACTER;
+    }
 
     rpn[2] = operation.operator;
     rpn[0] = operation.left_operand;
     rpn[1] = operation.right_operand;
-    
+
     return SUCCESS;
 }
 

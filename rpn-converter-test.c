@@ -58,11 +58,16 @@ START_TEST(can_convert_exponent)
 
     ck_assert_str_eq(rpn_result, "ab^");
 
-//#test when_an_unsupported_operator_is_passed_it_returns_invalid_character_status
-//    ck_assert_int_eq(to_rpn("a&b", rpn_result), INVALID_CHARACTER);
-//
-//    ck_assert_str_eq(rpn_result, "");
-//
+}
+END_TEST
+
+START_TEST(when_an_unsupported_operator_is_passed_it_returns_invalid_character_status)
+{
+#line 33
+    ck_assert_int_eq(to_rpn("a&b", rpn_result), INVALID_CHARACTER);
+
+    ck_assert_str_eq(rpn_result, "");
+
 //#test can_convert_with_any_operands_that_are_lowercase_letters
 //    ck_assert_int_eq(to_rpn("a+z", rpn_result), SUCCESS);
 //
@@ -113,6 +118,7 @@ int main(void)
     tcase_add_test(tc1_1, can_convert_multiplication);
     tcase_add_test(tc1_1, can_convert_division);
     tcase_add_test(tc1_1, can_convert_exponent);
+    tcase_add_test(tc1_1, when_an_unsupported_operator_is_passed_it_returns_invalid_character_status);
 
     srunner_run_all(sr, CK_ENV);
     nf = srunner_ntests_failed(sr);

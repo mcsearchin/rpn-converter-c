@@ -29,11 +29,11 @@ char rpn_result[100];
 
     ck_assert_str_eq(rpn_result, "ab^");
 
-//#test when_an_unsupported_operator_is_passed_it_returns_invalid_character_status
-//    ck_assert_int_eq(to_rpn("a&b", rpn_result), INVALID_CHARACTER);
-//
-//    ck_assert_str_eq(rpn_result, "");
-//
+#test when_an_unsupported_operator_is_passed_it_returns_invalid_character_status
+    ck_assert_int_eq(to_rpn("a&b", rpn_result), INVALID_CHARACTER);
+
+    ck_assert_str_eq(rpn_result, "");
+
 //#test can_convert_with_any_operands_that_are_lowercase_letters
 //    ck_assert_int_eq(to_rpn("a+z", rpn_result), SUCCESS);
 //
