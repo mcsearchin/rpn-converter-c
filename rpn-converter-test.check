@@ -34,21 +34,21 @@ char rpn_result[100];
 
     ck_assert_str_eq(rpn_result, "");
 
-//#test can_convert_with_any_operands_that_are_lowercase_letters
-//    ck_assert_int_eq(to_rpn("a+z", rpn_result), SUCCESS);
-//
-//    ck_assert_str_eq(rpn_result, "az+");
-//
-//#test when_a_non_lowercase_letter_first_operand_is_passed_it_returns_invalid_character_status
-//    ck_assert_int_eq(to_rpn("`-z", rpn_result), INVALID_CHARACTER);
-//
-//    ck_assert_str_eq(rpn_result, "");
-//
-//#test when_a_non_lowercase_letter_last_operand_is_passed_it_returns_invalid_character_status
-//    ck_assert_int_eq(to_rpn("a+{", rpn_result), INVALID_CHARACTER);
-//
-//    ck_assert_str_eq(rpn_result, "");
-//
+#test can_convert_with_any_operands_that_are_lowercase_letters
+    ck_assert_int_eq(to_rpn("a+z", rpn_result), SUCCESS);
+
+    ck_assert_str_eq(rpn_result, "az+");
+
+#test when_a_non_lowercase_letter_first_operand_is_passed_it_returns_invalid_character_status
+    ck_assert_int_eq(to_rpn("`-z", rpn_result), INVALID_CHARACTER);
+
+    ck_assert_str_eq(rpn_result, "");
+
+#test when_a_non_lowercase_letter_last_operand_is_passed_it_returns_invalid_character_status
+    ck_assert_int_eq(to_rpn("a+{", rpn_result), INVALID_CHARACTER);
+
+    ck_assert_str_eq(rpn_result, "");
+
 //#test can_convert_multiple_chained_operations_with_the_same_operator
 //    ck_assert_int_eq(to_rpn("a+b+c+d", rpn_result), SUCCESS);
 //
