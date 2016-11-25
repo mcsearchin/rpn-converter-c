@@ -5,9 +5,18 @@
 
 #include "rpn-converter.h"
 
+#define null_char '\0'
 #define min_char_int_value 97
 #define max_char_int_value 122
-#define null_char '\0'
+
+typedef struct Operation Operation;
+struct Operation {
+    char operator;
+    char left_operand;
+    char right_operand;
+    Operation *left_operation;
+    Operation *right_operation;
+};
 
 const char supported_operators[] = { '^', '/', '*', '-', '+' };
 
@@ -45,6 +54,19 @@ static bool is_valid_operand(const char operand) {
 }
 
 rpn_conversion_status to_rpn(const char *infix, char *rpn) {
+    Operation operation = { null_char, null_char, null_char, NULL, NULL };
+    operation.operator = infix[1];
+    operation.left_operand = infix[0];
+    operation.right_operand = infix[2];
+
+    rpn[2] = operation.operator;
+    rpn[0] = operation.left_operand;
+    rpn[1] = operation.right_operand;
+    
+    return SUCCESS;
+}
+
+rpn_conversion_status to_rpn_lame(const char *infix, char *rpn) {
     int infix_index, infix_length = strlen(infix);
     char infix_char;
     int ascending_index = 0, descending_index = infix_length - 1;
