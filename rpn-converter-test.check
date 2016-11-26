@@ -49,11 +49,11 @@ char rpn_result[100];
 
     ck_assert_str_eq(rpn_result, "");
 
-//#test can_convert_multiple_chained_operations_with_the_same_operator
-//    ck_assert_int_eq(to_rpn("a+b+c+d", rpn_result), SUCCESS);
-//
-//    ck_assert_str_eq(rpn_result, "abcd+++");
-//
+#test can_convert_multiple_chained_operations_with_the_same_operator
+    ck_assert_int_eq(to_rpn("a+b+c+d", rpn_result), SUCCESS);
+
+    ck_assert_str_eq(rpn_result, "abcd+++");
+
 //#test can_convert_subtraction_then_addition
 //    ck_assert_int_eq(to_rpn("a-b+c", rpn_result), SUCCESS);
 //
