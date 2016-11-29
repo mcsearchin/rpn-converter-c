@@ -118,11 +118,16 @@ START_TEST(can_convert_subtraction_then_addition)
 
     ck_assert_str_eq(rpn_result, "ab-c+");
 
-//#test can_convert_multiplication_then_subtraction
-//    ck_assert_int_eq(to_rpn("a*b-c", rpn_result), SUCCESS);
-//
-//    ck_assert_str_eq(rpn_result, "ab*c-");
-//
+}
+END_TEST
+
+START_TEST(can_convert_subtraction_then_multiplication)
+{
+#line 63
+    ck_assert_int_eq(to_rpn("a-b*c", rpn_result), SUCCESS);
+
+    ck_assert_str_eq(rpn_result, "abc*-");
+
 //#test can_convert_addition_then_subtraction_then_multiplication
 //    ck_assert_int_eq(to_rpn("a+b-c*d", rpn_result), SUCCESS);
 //
@@ -149,6 +154,7 @@ int main(void)
     tcase_add_test(tc1_1, when_a_non_lowercase_letter_last_operand_is_passed_it_returns_invalid_character_status);
     tcase_add_test(tc1_1, can_convert_multiple_chained_operations_with_the_same_operator);
     tcase_add_test(tc1_1, can_convert_subtraction_then_addition);
+    tcase_add_test(tc1_1, can_convert_subtraction_then_multiplication);
 
     srunner_run_all(sr, CK_ENV);
     nf = srunner_ntests_failed(sr);

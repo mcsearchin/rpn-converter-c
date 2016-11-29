@@ -20,6 +20,14 @@ struct Operation {
 
 const char supported_operators[] = { '^', '/', '*', '-', '+' };
 
+static char *substring(const char *string, int start, int length) {
+    char *substring = malloc(sizeof(length + 1));
+    strncpy(substring, &string[start], length);
+    substring[length] = null_char;
+
+    return substring;
+}
+
 static int get_operator_precedence(const char operator) {
     int index, supported_operators_length = sizeof(supported_operators);
     for (index = 0; index < supported_operators_length; index++) {
@@ -35,21 +43,20 @@ static bool is_supported_operator(const char operator) {
     return get_operator_precedence(operator) >= 0;
 }
 
-// static int get_weakest_operator_index(const char *infix) {
-//     int infix_index, infix_length = strlen(infix);
-//     int operator_precedence, weakest_operator_precedence = -1, weakest_operator_index = -1;
+static int get_weakest_operator_index(const char *infix) {
+    int infix_index, infix_length = strlen(infix);
+    int operator_precedence, weakest_operator_precedence = -1, weakest_operator_index = -1;
 
-//     for (infix_index = 0; infix_index < infix_length; infix_index++) {
-//         operator_precedence = get_operator_precedence(infix[infix_index]);
-//         if (operator_precedence > weakest_operator_precedence) {
-//             weakest_operator_precedence = operator_precedence;
-//             weakest_operator_index = infix_index;
-//         }
-//     }
+    for (infix_index = 0; infix_index < infix_length; infix_index++) {
+        operator_precedence = get_operator_precedence(infix[infix_index]);
+        if (operator_precedence > weakest_operator_precedence) {
+            weakest_operator_precedence = operator_precedence;
+            weakest_operator_index = infix_index;
+        }
+    }
 
-//     return weakest_operator_index;
-
-// }
+    return weakest_operator_index;
+}
 
 static bool is_valid_operand(const char operand) {
     return operand >= min_char_int_value && operand <= max_char_int_value;
@@ -74,17 +81,15 @@ static void clean_up_operation(Operation *operation) {
 }
 
 static rpn_conversion_status populate_operation_from_infix(const char *infix, Operation *operation) {
-    int operator_index = (strlen(infix) > 3 && '+' != infix[1]) ? 3 : 1;
+    int weakest_operator_index = get_weakest_operator_index(infix);
 
-    if (!is_supported_operator(infix[operator_index])) {
+    if (!is_supported_operator(infix[weakest_operator_index])) {
         return INVALID_CHARACTER;
     }
 
-    operation->operator = infix[operator_index];
+    operation->operator = infix[weakest_operator_index];
 
-    char left_side[operator_index + 1];
-    strncpy(left_side, infix, operator_index);
-    left_side[operator_index] = null_char;
+    char *left_side = substring(infix, 0, weakest_operator_index);
     if (strlen(left_side) > 1) {
         operation->left_sub_operation = initialize_operation();
         populate_operation_from_infix(left_side, operation->left_sub_operation);
@@ -93,8 +98,9 @@ static rpn_conversion_status populate_operation_from_infix(const char *infix, Op
     } else {
         return INVALID_CHARACTER;
     }
+    free(left_side);
 
-    const char *right_side = &infix[operator_index + 1];
+    const char *right_side = &infix[weakest_operator_index + 1];
     if (strlen(right_side) > 1) {
         operation->right_sub_operation = initialize_operation();
         populate_operation_from_infix(right_side, operation->right_sub_operation);
