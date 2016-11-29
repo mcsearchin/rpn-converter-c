@@ -54,11 +54,11 @@ char rpn_result[100];
 
     ck_assert_str_eq(rpn_result, "abcd+++");
 
-//#test can_convert_subtraction_then_addition
-//    ck_assert_int_eq(to_rpn("a-b+c", rpn_result), SUCCESS);
-//
-//    ck_assert_str_eq(rpn_result, "ab-c+");
-//
+#test can_convert_subtraction_then_addition
+    ck_assert_int_eq(to_rpn("a-b+c", rpn_result), SUCCESS);
+
+    ck_assert_str_eq(rpn_result, "ab-c+");
+
 //#test can_convert_multiplication_then_subtraction
 //    ck_assert_int_eq(to_rpn("a*b-c", rpn_result), SUCCESS);
 //
