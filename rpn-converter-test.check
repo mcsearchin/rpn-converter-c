@@ -34,6 +34,16 @@ char rpn_result[100];
 
     ck_assert_str_eq(rpn_result, "");
 
+#test when_an_unsupported_operator_is_later_in_the_expression_it_returns_invalid_character_status
+    ck_assert_int_eq(to_rpn("a+b|c", rpn_result), INVALID_CHARACTER);
+
+    ck_assert_str_eq(rpn_result, "");
+
+#test when_an_unsupported_operator_is_first_in_a_complex_expression_it_returns_invalid_character_status
+    ck_assert_int_eq(to_rpn("a%b+c", rpn_result), INVALID_CHARACTER);
+
+    ck_assert_str_eq(rpn_result, "");
+
 #test can_convert_with_any_operands_that_are_lowercase_letters
     ck_assert_int_eq(to_rpn("a+z", rpn_result), SUCCESS);
 

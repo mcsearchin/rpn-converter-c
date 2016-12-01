@@ -39,10 +39,6 @@ static int get_operator_precedence(const char operator) {
     return -1;
 }
 
-static bool is_supported_operator(const char operator) {
-    return get_operator_precedence(operator) >= 0;
-}
-
 static int get_weakest_operator_index(const char *infix) {
     int infix_index, infix_length = strlen(infix);
     int operator_precedence, weakest_operator_precedence = -1, weakest_operator_index = -1;
@@ -81,9 +77,10 @@ static void clean_up_operation(Operation *operation) {
 }
 
 static rpn_conversion_status populate_operation_from_infix(const char *infix, Operation *operation) {
+    rpn_conversion_status status = SUCCESS;
     int weakest_operator_index = get_weakest_operator_index(infix);
 
-    if (!is_supported_operator(infix[weakest_operator_index])) {
+    if (weakest_operator_index < 0) {
         return INVALID_CHARACTER;
     }
 
@@ -92,7 +89,7 @@ static rpn_conversion_status populate_operation_from_infix(const char *infix, Op
     char *left_side = substring(infix, 0, weakest_operator_index);
     if (strlen(left_side) > 1) {
         operation->left_sub_operation = initialize_operation();
-        populate_operation_from_infix(left_side, operation->left_sub_operation);
+        status = populate_operation_from_infix(left_side, operation->left_sub_operation);
     } else if (is_valid_operand(left_side[0])) {
         operation->left_operand = left_side[0];
     } else {
@@ -103,14 +100,14 @@ static rpn_conversion_status populate_operation_from_infix(const char *infix, Op
     const char *right_side = &infix[weakest_operator_index + 1];
     if (strlen(right_side) > 1) {
         operation->right_sub_operation = initialize_operation();
-        populate_operation_from_infix(right_side, operation->right_sub_operation);
+        status = populate_operation_from_infix(right_side, operation->right_sub_operation);
     } else if (is_valid_operand(right_side[0])) {
         operation->right_operand = right_side[0];
     } else {
         return INVALID_CHARACTER;
     }
     
-    return SUCCESS;
+    return status;
 }
 
 static void set_and_increment(char value, char *string, int *index) {

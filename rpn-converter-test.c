@@ -71,9 +71,29 @@ START_TEST(when_an_unsupported_operator_is_passed_it_returns_invalid_character_s
 }
 END_TEST
 
-START_TEST(can_convert_with_any_operands_that_are_lowercase_letters)
+START_TEST(when_an_unsupported_operator_is_later_in_the_expression_it_returns_invalid_character_status)
 {
 #line 38
+    ck_assert_int_eq(to_rpn("a+b|c", rpn_result), INVALID_CHARACTER);
+
+    ck_assert_str_eq(rpn_result, "");
+
+}
+END_TEST
+
+START_TEST(when_an_unsupported_operator_is_first_in_a_complex_expression_it_returns_invalid_character_status)
+{
+#line 43
+    ck_assert_int_eq(to_rpn("a%b+c", rpn_result), INVALID_CHARACTER);
+
+    ck_assert_str_eq(rpn_result, "");
+
+}
+END_TEST
+
+START_TEST(can_convert_with_any_operands_that_are_lowercase_letters)
+{
+#line 48
     ck_assert_int_eq(to_rpn("a+z", rpn_result), SUCCESS);
 
     ck_assert_str_eq(rpn_result, "az+");
@@ -83,7 +103,7 @@ END_TEST
 
 START_TEST(when_a_non_lowercase_letter_first_operand_is_passed_it_returns_invalid_character_status)
 {
-#line 43
+#line 53
     ck_assert_int_eq(to_rpn("`-z", rpn_result), INVALID_CHARACTER);
 
     ck_assert_str_eq(rpn_result, "");
@@ -93,7 +113,7 @@ END_TEST
 
 START_TEST(when_a_non_lowercase_letter_last_operand_is_passed_it_returns_invalid_character_status)
 {
-#line 48
+#line 58
     ck_assert_int_eq(to_rpn("a+{", rpn_result), INVALID_CHARACTER);
 
     ck_assert_str_eq(rpn_result, "");
@@ -103,7 +123,7 @@ END_TEST
 
 START_TEST(can_convert_multiple_chained_operations_with_the_same_operator)
 {
-#line 53
+#line 63
     ck_assert_int_eq(to_rpn("a+b+c+d", rpn_result), SUCCESS);
 
     ck_assert_str_eq(rpn_result, "abcd+++");
@@ -113,7 +133,7 @@ END_TEST
 
 START_TEST(can_convert_subtraction_then_addition)
 {
-#line 58
+#line 68
     ck_assert_int_eq(to_rpn("a-b+c", rpn_result), SUCCESS);
 
     ck_assert_str_eq(rpn_result, "ab-c+");
@@ -123,7 +143,7 @@ END_TEST
 
 START_TEST(can_convert_subtraction_then_multiplication)
 {
-#line 63
+#line 73
     ck_assert_int_eq(to_rpn("a-b*c", rpn_result), SUCCESS);
 
     ck_assert_str_eq(rpn_result, "abc*-");
@@ -133,7 +153,7 @@ END_TEST
 
 START_TEST(can_convert_addition_then_subtraction_then_multiplication)
 {
-#line 68
+#line 78
     ck_assert_int_eq(to_rpn("a+b-c*d", rpn_result), SUCCESS);
 
     ck_assert_str_eq(rpn_result, "abcd*-+");
@@ -154,6 +174,8 @@ int main(void)
     tcase_add_test(tc1_1, can_convert_division);
     tcase_add_test(tc1_1, can_convert_exponent);
     tcase_add_test(tc1_1, when_an_unsupported_operator_is_passed_it_returns_invalid_character_status);
+    tcase_add_test(tc1_1, when_an_unsupported_operator_is_later_in_the_expression_it_returns_invalid_character_status);
+    tcase_add_test(tc1_1, when_an_unsupported_operator_is_first_in_a_complex_expression_it_returns_invalid_character_status);
     tcase_add_test(tc1_1, can_convert_with_any_operands_that_are_lowercase_letters);
     tcase_add_test(tc1_1, when_a_non_lowercase_letter_first_operand_is_passed_it_returns_invalid_character_status);
     tcase_add_test(tc1_1, when_a_non_lowercase_letter_last_operand_is_passed_it_returns_invalid_character_status);
