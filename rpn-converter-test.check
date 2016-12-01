@@ -83,3 +83,18 @@ char rpn_result[100];
     ck_assert_int_eq(to_rpn("a+b-c*d", rpn_result), SUCCESS);
 
     ck_assert_str_eq(rpn_result, "abcd*-+");
+
+#test can_convert_division_then_multiplication_then_exponentiation
+    ck_assert_int_eq(to_rpn("a/b*c^d", rpn_result), SUCCESS);
+
+    ck_assert_str_eq(rpn_result, "ab/cd^*");
+
+#test can_convert_multiplication_then_division_then_subtraction_then_exponentiation
+    ck_assert_int_eq(to_rpn("b*c/d-e^f", rpn_result), SUCCESS);
+
+    ck_assert_str_eq(rpn_result, "bcd/*ef^-");
+
+#test can_convert_multiplication_then_subtraction_then_exponentiation_then_division
+    ck_assert_int_eq(to_rpn("b*c-d^e/f", rpn_result), SUCCESS);
+
+    ck_assert_str_eq(rpn_result, "bc*de^f/-");

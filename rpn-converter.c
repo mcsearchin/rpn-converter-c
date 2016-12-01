@@ -138,19 +138,22 @@ static void set_and_decrement(char value, char *string, int *index) {
 }
 
 static void populate_rpn_from_operation(const Operation *operation, char *rpn, int *start_index, int *end_index) {
-    if (!operation->left->operation && !operation->right->operation) {
-        set_and_increment(operation->left->operand, rpn, start_index);
-        set_and_increment(operation->right->operand, rpn, start_index);
-        set_and_increment(operation->operator, rpn, start_index);
+    if (!operation->right->operation && !operation->left->operation) {
+        set_and_decrement(operation->operator, rpn, end_index);
+        set_and_decrement(operation->right->operand, rpn, end_index);
+        set_and_decrement(operation->left->operand, rpn, end_index);
     } else {
         set_and_decrement(operation->operator, rpn, end_index);
 
-        if (operation->left->operation) {
-            set_and_decrement(operation->right->operand, rpn, end_index);
+        if (operation->right->operation && operation->left->operation) {
+            populate_rpn_from_operation(operation->right->operation, rpn, start_index, end_index);
             populate_rpn_from_operation(operation->left->operation, rpn, start_index, end_index);
-        } else {
+        } else if (operation->right->operation) {
             set_and_increment(operation->left->operand, rpn, start_index);
             populate_rpn_from_operation(operation->right->operation, rpn, start_index, end_index);
+        } else {
+            set_and_decrement(operation->right->operand, rpn, end_index);
+            populate_rpn_from_operation(operation->left->operation, rpn, start_index, end_index);
         }
     }
 }
