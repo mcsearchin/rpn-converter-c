@@ -29,18 +29,23 @@ char rpn_result[100];
 
     ck_assert_str_eq(rpn_result, "ab^");
 
-#test when_an_unsupported_operator_is_passed_it_returns_invalid_character_status
-    ck_assert_int_eq(to_rpn("a&b", rpn_result), INVALID_CHARACTER);
+#test when_an_unsupported_operator_is_passed_it_returns_invalid_syntax_status
+    ck_assert_int_eq(to_rpn("a&b", rpn_result), INVALID_SYNTAX);
 
     ck_assert_str_eq(rpn_result, "");
 
-#test when_an_unsupported_operator_is_later_in_the_expression_it_returns_invalid_character_status
-    ck_assert_int_eq(to_rpn("a+b|c", rpn_result), INVALID_CHARACTER);
+#test when_an_unsupported_operator_is_later_in_the_expression_it_returns_invalid_syntax_status
+    ck_assert_int_eq(to_rpn("a+b|c", rpn_result), INVALID_SYNTAX);
 
     ck_assert_str_eq(rpn_result, "");
 
-#test when_an_unsupported_operator_is_first_in_a_complex_expression_it_returns_invalid_character_status
-    ck_assert_int_eq(to_rpn("a%b+c", rpn_result), INVALID_CHARACTER);
+#test when_an_unsupported_operator_is_first_in_a_complex_expression_it_returns_invalid_syntax_status
+    ck_assert_int_eq(to_rpn("a%b+c", rpn_result), INVALID_SYNTAX);
+
+    ck_assert_str_eq(rpn_result, "");
+
+#test when_the_expression_is_incomplete_it_returns_invalid_syntax_status
+    ck_assert_int_eq(to_rpn("a", rpn_result), INVALID_SYNTAX);
 
     ck_assert_str_eq(rpn_result, "");
 
@@ -49,13 +54,13 @@ char rpn_result[100];
 
     ck_assert_str_eq(rpn_result, "az+");
 
-#test when_a_non_lowercase_letter_first_operand_is_passed_it_returns_invalid_character_status
-    ck_assert_int_eq(to_rpn("`-z", rpn_result), INVALID_CHARACTER);
+#test when_a_non_lowercase_letter_first_operand_is_passed_it_returns_invalid_syntax_status
+    ck_assert_int_eq(to_rpn("`-z", rpn_result), INVALID_SYNTAX);
 
     ck_assert_str_eq(rpn_result, "");
 
-#test when_a_non_lowercase_letter_last_operand_is_passed_it_returns_invalid_character_status
-    ck_assert_int_eq(to_rpn("a+{", rpn_result), INVALID_CHARACTER);
+#test when_a_non_lowercase_letter_last_operand_is_passed_it_returns_invalid_syntax_status
+    ck_assert_int_eq(to_rpn("a+{", rpn_result), INVALID_SYNTAX);
 
     ck_assert_str_eq(rpn_result, "");
 

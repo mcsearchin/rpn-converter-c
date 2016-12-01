@@ -10,12 +10,16 @@
 #define max_char_int_value 122
 
 typedef struct Operation Operation;
+
+typedef struct Side {
+    char operand;
+    Operation *operation;
+} Side;
+
 struct Operation {
     char operator;
-    char left_operand;
-    char right_operand;
-    Operation *left_sub_operation;
-    Operation *right_sub_operation;
+    Side *left;
+    Side *right;
 };
 
 const char supported_operators[] = { '^', '/', '*', '-', '+' };
@@ -58,55 +62,68 @@ static bool is_valid_operand(const char operand) {
     return operand >= min_char_int_value && operand <= max_char_int_value;
 }
 
+static Side *initialize_operation_side() {
+    Side *side = (Side *) malloc(sizeof(Side));
+    side->operand = null_char;
+    side->operation = NULL;
+    return side;
+}
+
 static Operation *initialize_operation() {
     Operation *operation = (Operation *) malloc(sizeof(Operation));
     operation->operator = null_char;
-    operation->left_operand = null_char;
-    operation->right_operand = null_char;
-    operation->left_sub_operation = NULL;
-    operation->right_sub_operation = NULL;
+    operation->left = initialize_operation_side();
+    operation->right = initialize_operation_side();
     return operation;
 }
 
 static void clean_up_operation(Operation *operation) {
     if (operation) {
-        clean_up_operation(operation->left_sub_operation);
-        clean_up_operation(operation->right_sub_operation);
+        clean_up_operation(operation->left->operation);
+        free(operation->left);
+        clean_up_operation(operation->right->operation);
+        free(operation->right);
         free(operation);
     }
 }
+
+static rpn_conversion_status populate_operation_side_from_infix(const char *infix, Side *side);
 
 static rpn_conversion_status populate_operation_from_infix(const char *infix, Operation *operation) {
     rpn_conversion_status status = SUCCESS;
     int weakest_operator_index = get_weakest_operator_index(infix);
 
     if (weakest_operator_index < 0) {
-        return INVALID_CHARACTER;
+        return INVALID_SYNTAX;
     }
 
     operation->operator = infix[weakest_operator_index];
 
     char *left_side = substring(infix, 0, weakest_operator_index);
-    if (strlen(left_side) > 1) {
-        operation->left_sub_operation = initialize_operation();
-        status = populate_operation_from_infix(left_side, operation->left_sub_operation);
-    } else if (is_valid_operand(left_side[0])) {
-        operation->left_operand = left_side[0];
-    } else {
-        return INVALID_CHARACTER;
-    }
+    status = populate_operation_side_from_infix(left_side, operation->left);
     free(left_side);
+    if (SUCCESS != status) {
+        return status;
+    }
 
     const char *right_side = &infix[weakest_operator_index + 1];
-    if (strlen(right_side) > 1) {
-        operation->right_sub_operation = initialize_operation();
-        status = populate_operation_from_infix(right_side, operation->right_sub_operation);
-    } else if (is_valid_operand(right_side[0])) {
-        operation->right_operand = right_side[0];
-    } else {
-        return INVALID_CHARACTER;
-    }
+    status = populate_operation_side_from_infix(right_side, operation->right);
     
+    return status;
+}
+
+static rpn_conversion_status populate_operation_side_from_infix(const char *infix, Side *side) {
+    rpn_conversion_status status = SUCCESS;
+
+    if (strlen(infix) > 1) {
+        side->operation = initialize_operation();
+        status = populate_operation_from_infix(infix, side->operation);
+    } else if (is_valid_operand(infix[0])) {
+        side->operand = infix[0];
+    } else {
+        return INVALID_SYNTAX;
+    }
+
     return status;
 }
 
@@ -121,18 +138,20 @@ static void set_and_decrement(char value, char *string, int *index) {
 }
 
 static void populate_rpn_from_operation(const Operation *operation, char *rpn, int *start_index, int *end_index) {
-    if (!operation->left_sub_operation && !operation->right_sub_operation) {
-        set_and_increment(operation->left_operand, rpn, start_index);
-        set_and_increment(operation->right_operand, rpn, start_index);
+    if (!operation->left->operation && !operation->right->operation) {
+        set_and_increment(operation->left->operand, rpn, start_index);
+        set_and_increment(operation->right->operand, rpn, start_index);
         set_and_increment(operation->operator, rpn, start_index);
-    } else if (operation->left_sub_operation) {
+    } else {
         set_and_decrement(operation->operator, rpn, end_index);
-        set_and_decrement(operation->right_operand, rpn, end_index);
-        populate_rpn_from_operation(operation->left_sub_operation, rpn, start_index, end_index);
-    } else if (operation->right_sub_operation) {
-        set_and_decrement(operation->operator, rpn, end_index);
-        set_and_increment(operation->left_operand, rpn, start_index);
-        populate_rpn_from_operation(operation->right_sub_operation, rpn, start_index, end_index);
+
+        if (operation->left->operation) {
+            set_and_decrement(operation->right->operand, rpn, end_index);
+            populate_rpn_from_operation(operation->left->operation, rpn, start_index, end_index);
+        } else {
+            set_and_increment(operation->left->operand, rpn, start_index);
+            populate_rpn_from_operation(operation->right->operation, rpn, start_index, end_index);
+        }
     }
 }
 
