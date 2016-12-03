@@ -43,11 +43,10 @@ static int get_operator_precedence(const char operator) {
     return -1;
 }
 
-static int get_weakest_operator_index(const char *infix) {
-    int infix_index, infix_length = strlen(infix);
-    int operator_precedence, weakest_operator_precedence = -1, weakest_operator_index = -1;
+static int get_weakest_operator_index_for_infix(const char *infix) {
+    int infix_index, operator_precedence, weakest_operator_precedence = -1, weakest_operator_index = -1;
 
-    for (infix_index = 0; infix_index < infix_length; infix_index++) {
+    for (infix_index = strlen(infix) - 1; infix_index >= 0; infix_index--) {
         operator_precedence = get_operator_precedence(infix[infix_index]);
         if (operator_precedence > weakest_operator_precedence) {
             weakest_operator_precedence = operator_precedence;
@@ -91,7 +90,7 @@ static rpn_conversion_status populate_operation_side_from_infix(const char *infi
 
 static rpn_conversion_status populate_operation_from_infix(const char *infix, Operation *operation) {
     rpn_conversion_status status = SUCCESS;
-    int weakest_operator_index = get_weakest_operator_index(infix);
+    int weakest_operator_index = get_weakest_operator_index_for_infix(infix);
 
     if (weakest_operator_index < 0) {
         return INVALID_SYNTAX;

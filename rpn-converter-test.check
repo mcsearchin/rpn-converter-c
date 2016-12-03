@@ -67,7 +67,7 @@ char rpn_result[100];
 #test can_convert_multiple_chained_operations_with_the_same_operator
     ck_assert_int_eq(to_rpn("a+b+c+d", rpn_result), SUCCESS);
 
-    ck_assert_str_eq(rpn_result, "abcd+++");
+    ck_assert_str_eq(rpn_result, "ab+c+d+");
 
 #test can_convert_subtraction_then_addition
     ck_assert_int_eq(to_rpn("a-b+c", rpn_result), SUCCESS);
@@ -83,6 +83,11 @@ char rpn_result[100];
     ck_assert_int_eq(to_rpn("a+b-c*d", rpn_result), SUCCESS);
 
     ck_assert_str_eq(rpn_result, "abcd*-+");
+
+#test can_convert_addition_then_subtraction_then_addition
+    ck_assert_int_eq(to_rpn("a+b-c+d", rpn_result), SUCCESS);
+
+    ck_assert_str_eq(rpn_result, "abc-+d+");
 
 #test can_convert_division_then_multiplication_then_exponentiation
     ck_assert_int_eq(to_rpn("a/b*c^d", rpn_result), SUCCESS);

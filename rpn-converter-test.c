@@ -136,7 +136,7 @@ START_TEST(can_convert_multiple_chained_operations_with_the_same_operator)
 #line 68
     ck_assert_int_eq(to_rpn("a+b+c+d", rpn_result), SUCCESS);
 
-    ck_assert_str_eq(rpn_result, "abcd+++");
+    ck_assert_str_eq(rpn_result, "ab+c+d+");
 
 }
 END_TEST
@@ -171,9 +171,19 @@ START_TEST(can_convert_addition_then_subtraction_then_multiplication)
 }
 END_TEST
 
-START_TEST(can_convert_division_then_multiplication_then_exponentiation)
+START_TEST(can_convert_addition_then_subtraction_then_addition)
 {
 #line 88
+    ck_assert_int_eq(to_rpn("a+b-c+d", rpn_result), SUCCESS);
+
+    ck_assert_str_eq(rpn_result, "abc-+d+");
+
+}
+END_TEST
+
+START_TEST(can_convert_division_then_multiplication_then_exponentiation)
+{
+#line 93
     ck_assert_int_eq(to_rpn("a/b*c^d", rpn_result), SUCCESS);
 
     ck_assert_str_eq(rpn_result, "ab/cd^*");
@@ -183,7 +193,7 @@ END_TEST
 
 START_TEST(can_convert_multiplication_then_division_then_subtraction_then_exponentiation)
 {
-#line 93
+#line 98
     ck_assert_int_eq(to_rpn("b*c/d-e^f", rpn_result), SUCCESS);
 
     ck_assert_str_eq(rpn_result, "bcd/*ef^-");
@@ -193,7 +203,7 @@ END_TEST
 
 START_TEST(can_convert_multiplication_then_subtraction_then_exponentiation_then_division)
 {
-#line 98
+#line 103
     ck_assert_int_eq(to_rpn("b*c-d^e/f", rpn_result), SUCCESS);
 
     ck_assert_str_eq(rpn_result, "bc*de^f/-");
@@ -224,6 +234,7 @@ int main(void)
     tcase_add_test(tc1_1, can_convert_subtraction_then_addition);
     tcase_add_test(tc1_1, can_convert_subtraction_then_multiplication);
     tcase_add_test(tc1_1, can_convert_addition_then_subtraction_then_multiplication);
+    tcase_add_test(tc1_1, can_convert_addition_then_subtraction_then_addition);
     tcase_add_test(tc1_1, can_convert_division_then_multiplication_then_exponentiation);
     tcase_add_test(tc1_1, can_convert_multiplication_then_division_then_subtraction_then_exponentiation);
     tcase_add_test(tc1_1, can_convert_multiplication_then_subtraction_then_exponentiation_then_division);
