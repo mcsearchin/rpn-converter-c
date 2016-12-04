@@ -48,13 +48,22 @@ static bool is_supported_operator(const char operator) {
 }
 
 static int get_weakest_operator_index_for_infix(const char *infix) {
-    int infix_index, operator_precedence, weakest_operator_precedence = -1, weakest_operator_index = -1;
-
-    for (infix_index = strlen(infix) - 1; infix_index >= 0; infix_index--) {
-        operator_precedence = get_operator_precedence(infix[infix_index]);
-        if (operator_precedence > weakest_operator_precedence) {
-            weakest_operator_precedence = operator_precedence;
-            weakest_operator_index = infix_index;
+    int infix_index, end_index = strlen(infix) - 1, weakest_operator_index = -1; 
+    int operator_precedence, weakest_operator_precedence = -1;
+    bool parentheses = false;
+    for (infix_index = end_index; infix_index >= 0; infix_index--) {
+        if (')' == infix[infix_index]) {
+            if (infix_index == end_index && infix[0] != '(') {
+                parentheses = true;
+            }
+        } else if ('(' == infix[infix_index]) {
+            parentheses = false;
+        } else if (!parentheses) {
+            operator_precedence = get_operator_precedence(infix[infix_index]);
+            if (operator_precedence > weakest_operator_precedence) {
+                weakest_operator_precedence = operator_precedence;
+                weakest_operator_index = infix_index;
+            }
         }
     }
 
@@ -95,6 +104,7 @@ static rpn_conversion_status populate_operation_side_from_infix(const char *infi
 static rpn_conversion_status populate_operation_from_infix(const char *infix, Operation *operation) {
     rpn_conversion_status status = SUCCESS;
     int weakest_operator_index = get_weakest_operator_index_for_infix(infix);
+    printf("infix : %s, weakest_operator_index : %d\n", infix, weakest_operator_index);
 
     if (weakest_operator_index < 0) {
         return INVALID_SYNTAX;
@@ -137,7 +147,7 @@ static void set_and_decrement(char value, char *string, int *index) {
     (*index)--;      
 }
 
-static void populate_rpn_from_operation(const Operation *operation, char *rpn, int *start_index, int *end_index) {
+static void populate_rpn_from_operation(const Operation *operation, char *rpn, int *end_index) {
     if (!operation->right->operation && !operation->left->operation) {
         set_and_decrement(operation->operator, rpn, end_index);
         set_and_decrement(operation->right->operand, rpn, end_index);
@@ -146,19 +156,19 @@ static void populate_rpn_from_operation(const Operation *operation, char *rpn, i
         set_and_decrement(operation->operator, rpn, end_index);
 
         if (operation->right->operation && operation->left->operation) {
-            populate_rpn_from_operation(operation->right->operation, rpn, start_index, end_index);
-            populate_rpn_from_operation(operation->left->operation, rpn, start_index, end_index);
+            populate_rpn_from_operation(operation->right->operation, rpn, end_index);
+            populate_rpn_from_operation(operation->left->operation, rpn, end_index);
         } else if (operation->right->operation) {
-            populate_rpn_from_operation(operation->right->operation, rpn, start_index, end_index);
+            populate_rpn_from_operation(operation->right->operation, rpn, end_index);
             set_and_decrement(operation->left->operand, rpn, end_index);
         } else {
             set_and_decrement(operation->right->operand, rpn, end_index);
-            populate_rpn_from_operation(operation->left->operation, rpn, start_index, end_index);
+            populate_rpn_from_operation(operation->left->operation, rpn, end_index);
         }
     }
 }
 
-static int get_rpn_length(const char *infix) {
+static int get_rpn_length_for_infix(const char *infix) {
     int rpn_length = 0;
     int index, infix_length = strlen(infix);
     for (index = 0; index < infix_length; index++) {
@@ -179,8 +189,8 @@ rpn_conversion_status to_rpn(const char *infix, char *rpn) {
         return status;
     }
 
-    int start_index = 0, end_index = get_rpn_length(infix) - 1;
-    populate_rpn_from_operation(operation, rpn, &start_index, &end_index);
+    int end_index = get_rpn_length_for_infix(infix) - 1;
+    populate_rpn_from_operation(operation, rpn, &end_index);
 
     clean_up_operation(operation);
 

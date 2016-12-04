@@ -227,6 +227,16 @@ START_TEST(can_convert_addition_in_parentheses_then_addition)
     ck_assert_int_eq(to_rpn("(a+b)+c", rpn_result), SUCCESS);
 
     ck_assert_str_eq(rpn_result, "ab+c+");
+
+}
+END_TEST
+
+START_TEST(can_convert_addition_then_addition_in_parentheses)
+{
+#line 118
+    ck_assert_int_eq(to_rpn("a+(b+c)", rpn_result), SUCCESS);
+
+    ck_assert_str_eq(rpn_result, "abc++");
 }
 END_TEST
 
@@ -260,6 +270,7 @@ int main(void)
     tcase_add_test(tc1_1, can_convert_multiplication_then_subtraction_then_exponentiation_then_division);
     tcase_add_test(tc1_1, can_convert_exponentiation_then_subtraction_then_addition_then_multiplication_then_division);
     tcase_add_test(tc1_1, can_convert_addition_in_parentheses_then_addition);
+    tcase_add_test(tc1_1, can_convert_addition_then_addition_in_parentheses);
 
     srunner_run_all(sr, CK_ENV);
     nf = srunner_ntests_failed(sr);
