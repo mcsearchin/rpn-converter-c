@@ -47,22 +47,45 @@ static bool is_supported_operator(const char operator) {
     return get_operator_precedence(operator) >= 0;
 }
 
-static int get_weakest_operator_index_for_infix(const char *infix) {
-    int infix_index, end_index = strlen(infix) - 1, weakest_operator_index = -1; 
-    int operator_precedence, weakest_operator_precedence = -1;
-    bool parentheses = false;
-    for (infix_index = end_index; infix_index >= 0; infix_index--) {
-        if (')' == infix[infix_index]) {
-            if (infix_index == end_index && infix[0] != '(') {
-                parentheses = true;
+static bool surrounded_by_parentheses(const char *infix) {
+    bool surrounded = true;
+
+    int length = strlen(infix);
+    if ('(' == infix[0] && ')' == infix[length - 1]) {
+        int index;
+        for (index = 0; index < length - 1; index++) {
+            if (')' == infix[index]) {
+                surrounded = false;
+                break;
             }
-        } else if ('(' == infix[infix_index]) {
+        }
+    } else {
+        surrounded = false;
+    }
+
+    return surrounded;
+}
+
+static int get_weakest_operator_index_for_infix(const char *infix) {
+    int index, weakest_operator_index = -1;
+    int operator_precedence, weakest_operator_precedence = -1;
+    int end_index = strlen(infix) - 1, start_index = 0;
+    if (surrounded_by_parentheses(infix)) {
+        end_index--;
+        start_index++;
+    }
+
+    bool parentheses = false;
+    for (index = end_index; index >= start_index; index--) {
+        if (')' == infix[index]) {
+            parentheses = true;
+        } else if ('(' == infix[index]) {
             parentheses = false;
         } else if (!parentheses) {
-            operator_precedence = get_operator_precedence(infix[infix_index]);
+            operator_precedence = get_operator_precedence(infix[index]);
             if (operator_precedence > weakest_operator_precedence) {
                 weakest_operator_precedence = operator_precedence;
-                weakest_operator_index = infix_index;
+                weakest_operator_index = index;
             }
         }
     }
@@ -104,7 +127,6 @@ static rpn_conversion_status populate_operation_side_from_infix(const char *infi
 static rpn_conversion_status populate_operation_from_infix(const char *infix, Operation *operation) {
     rpn_conversion_status status = SUCCESS;
     int weakest_operator_index = get_weakest_operator_index_for_infix(infix);
-    printf("infix : %s, weakest_operator_index : %d\n", infix, weakest_operator_index);
 
     if (weakest_operator_index < 0) {
         return INVALID_SYNTAX;
