@@ -43,6 +43,10 @@ static int get_operator_precedence(const char operator) {
     return -1;
 }
 
+static bool is_supported_operator(const char operator) {
+    return get_operator_precedence(operator) >= 0;
+}
+
 static int get_weakest_operator_index_for_infix(const char *infix) {
     int infix_index, operator_precedence, weakest_operator_precedence = -1, weakest_operator_index = -1;
 
@@ -114,9 +118,11 @@ static rpn_conversion_status populate_operation_from_infix(const char *infix, Op
 static rpn_conversion_status populate_operation_side_from_infix(const char *infix, Side *side) {
     rpn_conversion_status status = SUCCESS;
 
-    if (strlen(infix) > 1) {
+    if (strlen(infix) > 2) {
         side->operation = initialize_operation();
         status = populate_operation_from_infix(infix, side->operation);
+    } else if (strlen(infix) > 1 && '(' == infix[0] && is_valid_operand(infix[1])) {
+        side->operand = infix[1];
     } else if (is_valid_operand(infix[0])) {
         side->operand = infix[0];
     } else {
@@ -152,6 +158,18 @@ static void populate_rpn_from_operation(const Operation *operation, char *rpn, i
     }
 }
 
+static int get_rpn_length(const char *infix) {
+    int rpn_length = 0;
+    int index, infix_length = strlen(infix);
+    for (index = 0; index < infix_length; index++) {
+        if (is_valid_operand(infix[index]) || is_supported_operator(infix[index])) {
+            rpn_length++;
+        }
+    }
+
+    return rpn_length;
+}
+
 rpn_conversion_status to_rpn(const char *infix, char *rpn) {
     Operation *operation = initialize_operation();
     rpn_conversion_status status = populate_operation_from_infix(infix, operation);
@@ -161,7 +179,7 @@ rpn_conversion_status to_rpn(const char *infix, char *rpn) {
         return status;
     }
 
-    int start_index = 0, end_index = strlen(infix) - 1;
+    int start_index = 0, end_index = get_rpn_length(infix) - 1;
     populate_rpn_from_operation(operation, rpn, &start_index, &end_index);
 
     clean_up_operation(operation);

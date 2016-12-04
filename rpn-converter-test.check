@@ -108,3 +108,8 @@ char rpn_result[100];
     ck_assert_int_eq(to_rpn("c^d-e+f*g/h", rpn_result), SUCCESS);
 
     ck_assert_str_eq(rpn_result, "cd^e-fgh/*+");
+
+#test can_convert_addition_in_parentheses_then_addition
+    ck_assert_int_eq(to_rpn("(a+b)+c", rpn_result), SUCCESS);
+
+    ck_assert_str_eq(rpn_result, "ab+c+");
