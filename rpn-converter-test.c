@@ -207,6 +207,16 @@ START_TEST(can_convert_multiplication_then_subtraction_then_exponentiation_then_
     ck_assert_int_eq(to_rpn("b*c-d^e/f", rpn_result), SUCCESS);
 
     ck_assert_str_eq(rpn_result, "bc*de^f/-");
+
+}
+END_TEST
+
+START_TEST(can_convert_exponentiation_then_subtraction_then_addition_then_multiplication_then_division)
+{
+#line 108
+    ck_assert_int_eq(to_rpn("c^d-e+f*g/h", rpn_result), SUCCESS);
+
+    ck_assert_str_eq(rpn_result, "cd^e-fgh/*+");
 }
 END_TEST
 
@@ -238,6 +248,7 @@ int main(void)
     tcase_add_test(tc1_1, can_convert_division_then_multiplication_then_exponentiation);
     tcase_add_test(tc1_1, can_convert_multiplication_then_division_then_subtraction_then_exponentiation);
     tcase_add_test(tc1_1, can_convert_multiplication_then_subtraction_then_exponentiation_then_division);
+    tcase_add_test(tc1_1, can_convert_exponentiation_then_subtraction_then_addition_then_multiplication_then_division);
 
     srunner_run_all(sr, CK_ENV);
     nf = srunner_ntests_failed(sr);

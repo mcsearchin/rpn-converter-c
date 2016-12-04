@@ -126,11 +126,6 @@ static rpn_conversion_status populate_operation_side_from_infix(const char *infi
     return status;
 }
 
-static void set_and_increment(char value, char *string, int *index) {
-    string[*index] = value;
-    (*index)++;        
-}
-
 static void set_and_decrement(char value, char *string, int *index) {
     string[*index] = value;
     (*index)--;      
@@ -148,8 +143,8 @@ static void populate_rpn_from_operation(const Operation *operation, char *rpn, i
             populate_rpn_from_operation(operation->right->operation, rpn, start_index, end_index);
             populate_rpn_from_operation(operation->left->operation, rpn, start_index, end_index);
         } else if (operation->right->operation) {
-            set_and_increment(operation->left->operand, rpn, start_index);
             populate_rpn_from_operation(operation->right->operation, rpn, start_index, end_index);
+            set_and_decrement(operation->left->operand, rpn, end_index);
         } else {
             set_and_decrement(operation->right->operand, rpn, end_index);
             populate_rpn_from_operation(operation->left->operation, rpn, start_index, end_index);

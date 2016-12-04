@@ -103,3 +103,8 @@ char rpn_result[100];
     ck_assert_int_eq(to_rpn("b*c-d^e/f", rpn_result), SUCCESS);
 
     ck_assert_str_eq(rpn_result, "bc*de^f/-");
+
+#test can_convert_exponentiation_then_subtraction_then_addition_then_multiplication_then_division
+    ck_assert_int_eq(to_rpn("c^d-e+f*g/h", rpn_result), SUCCESS);
+
+    ck_assert_str_eq(rpn_result, "cd^e-fgh/*+");
