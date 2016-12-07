@@ -47,33 +47,38 @@ static bool is_supported_operator(const char operator) {
     return get_operator_precedence(operator) >= 0;
 }
 
-static bool surrounded_by_parentheses(const char *infix) {
-    bool surrounded = true;
+static int get_surrounding_parentheses_count(const char *infix) {
+    int count = 0;
 
-    int length = strlen(infix);
-    if ('(' == infix[0] && ')' == infix[length - 1]) {
+    int start = 0, end = strlen(infix) - 1;
+    bool outer_parentheses_match = false;
+    do {
+        outer_parentheses_match = '(' == infix[start] && ')' == infix[end];
+        if (outer_parentheses_match) {
+            count++;
+            start++;
+            end--;
+        }
+    } while (outer_parentheses_match);
+
+    if (count > 0) {
         int index;
-        for (index = 0; index < length - 1; index++) {
+        for (index = start; index <= end; index++) {
             if (')' == infix[index]) {
-                surrounded = false;
-                break;
+                count--;
             }
         }
-    } else {
-        surrounded = false;
     }
 
-    return surrounded;
+    return count;
 }
 
 static int get_weakest_operator_index_for_infix(const char *infix) {
     int index, weakest_operator_index = -1;
     int operator_precedence, weakest_operator_precedence = -1;
-    int end_index = strlen(infix) - 1, start_index = 0;
-    if (surrounded_by_parentheses(infix)) {
-        end_index--;
-        start_index++;
-    }
+    int surrounding_parentheses_count = get_surrounding_parentheses_count(infix);
+    int end_index = strlen(infix) - surrounding_parentheses_count - 1;
+    int start_index = surrounding_parentheses_count;
 
     bool parentheses = false;
     for (index = end_index; index >= start_index; index--) {
@@ -93,8 +98,50 @@ static int get_weakest_operator_index_for_infix(const char *infix) {
     return weakest_operator_index;
 }
 
+static bool contains_operator(const char *string) {
+    int index, length = strlen(string);
+    for (index = 0; index < length; index++) {
+        if (is_supported_operator(string[index])) {
+            return true;
+        }
+    }
+    return false;
+}
+
 static bool is_valid_operand(const char operand) {
     return operand >= min_char_int_value && operand <= max_char_int_value;
+}
+
+static char get_single_operand(const char *string) {
+    char operand = null_char;
+    bool operand_found = 0;
+    int index, length = strlen(string);
+    for (index = 0; index < length; index++) {
+        if (is_valid_operand(string[index])) {
+            if (!operand_found) {
+                operand = string[index];
+                operand_found = true;
+            } else {
+                operand = null_char;
+                break;
+            }
+        }
+    }
+
+    return operand;
+}
+
+static bool infix_contains_invalid_character(const char *infix) {
+    int index, length = strlen(infix);
+    char character;
+    for (index = 0; index < length; index++) {
+        character = infix[index];
+        if (!is_valid_operand(character) && !is_supported_operator(character) &&
+            '(' != character && ')' != character) {
+            return true;
+        }
+    }
+    return false;
 }
 
 static Side *initialize_operation_side() {
@@ -150,15 +197,17 @@ static rpn_conversion_status populate_operation_from_infix(const char *infix, Op
 static rpn_conversion_status populate_operation_side_from_infix(const char *infix, Side *side) {
     rpn_conversion_status status = SUCCESS;
 
-    if (strlen(infix) > 2) {
+    if (contains_operator(infix)) {
         side->operation = initialize_operation();
         status = populate_operation_from_infix(infix, side->operation);
-    } else if (strlen(infix) > 1 && '(' == infix[0] && is_valid_operand(infix[1])) {
-        side->operand = infix[1];
-    } else if (is_valid_operand(infix[0])) {
-        side->operand = infix[0];
     } else {
-        return INVALID_SYNTAX;
+        char operand = get_single_operand(infix);
+
+        if (null_char != operand) {
+            side->operand = operand;
+        } else {
+            status = INVALID_SYNTAX;
+        }
     }
 
     return status;
@@ -203,6 +252,10 @@ static int get_rpn_length_for_infix(const char *infix) {
 }
 
 rpn_conversion_status to_rpn(const char *infix, char *rpn) {
+    if (infix_contains_invalid_character(infix)) {
+        return INVALID_SYNTAX;
+    }
+
     Operation *operation = initialize_operation();
     rpn_conversion_status status = populate_operation_from_infix(infix, operation);
 
